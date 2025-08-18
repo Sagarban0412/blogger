@@ -1,14 +1,19 @@
+// app/api/blogs/route.js
 import connectDB from "@/app/lib/mongodb";
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import User from "@/app/models/userModel";
-import path from "path";
 import BlogModel from "@/app/models/blogModel";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
+import { v2 as cloudinary } from "cloudinary";
 
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-
+// GET: Fetch blogs (all or "my")
 export async function GET(req) {
   await connectDB();
   try {
@@ -34,7 +39,6 @@ export async function GET(req) {
         .sort({ date: -1 })
         .populate("author", "userName");
     } else {
-      // default: return all blogs
       blogs = await BlogModel.find({})
         .sort({ date: -1 })
         .populate("author", "userName");
@@ -50,46 +54,46 @@ export async function GET(req) {
   }
 }
 
+// POST: Create a new blog with image upload
 export async function POST(request) {
   await connectDB();
   try {
     const formData = await request.formData();
-    const timestamp = Date.now();
 
-    // const image = formData.get("image");
-    // if (!image || !image.name) {
-    //   return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
-    // }
-
-    // const imageByteData = await image.arrayBuffer();
-    // const buffer = Buffer.from(imageByteData);
-
-    // // Ensure uploads folder exists
-    // const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    // await mkdir(uploadsDir, { recursive: true });
-
-    // // Save file
-    // const fileName = `${timestamp}_${image.name}`;
-    // const filePath = path.join(uploadsDir, fileName);
-    // await writeFile(filePath, buffer);
-
-    // // Create full image URL
-    // const imageUrl = `${request.nextUrl.origin}/uploads/${fileName}`;
-    // console.log("Image uploaded:", imageUrl);
-
-    //geting user id from cookies
-
+    // Get user ID from JWT cookie
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.id;
 
-    const category = formData.get("category");
-    console.log(category);
+    // Get the uploaded image from form
+    const image = formData.get("image");
+    let imageUrl = "";
+    if (image) {
+      const arrayBuffer = await image.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      // Upload image to Cloudinary
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { resource_type: "image" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        uploadStream.end(buffer);
+      });
+
+      imageUrl = uploadResult.secure_url;
+    } else {
+      // Fallback placeholder image
+      imageUrl =
+        "https://plus.unsplash.com/premium_photo-1706800283398-e2a5591c5fa0?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+    }
 
     // Create blog document
     const blogData = {
@@ -97,11 +101,11 @@ export async function POST(request) {
       description: formData.get("description"),
       category: formData.get("category"),
       author: userId,
-      image: "https://plus.unsplash.com/premium_photo-1706800283398-e2a5591c5fa0?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image: imageUrl,
     };
 
     await BlogModel.create(blogData);
-    console.log("Blog saved in database");
+    console.log("✅ Blog saved in database with Cloudinary image");
 
     return NextResponse.json({ success: true, msg: "Blog added" });
   } catch (err) {

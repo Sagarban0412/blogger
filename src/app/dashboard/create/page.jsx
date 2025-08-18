@@ -8,7 +8,7 @@ const Page = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    category: "",
+    category: "technology",
     image: null,
   });
 
@@ -27,35 +27,38 @@ const Page = () => {
       const data = new FormData();
       data.append("title", formData.title);
       data.append("description", formData.description);
-      data.append("category", formData.category || "technology");
-      data.append("image", formData.image);
+      data.append("category", formData.category);
+      if (formData.image) data.append("image", formData.image);
 
       const res = await fetch("/api/blogs", {
         method: "POST",
         body: data,
       });
 
-      if (!res.data) {
-        throw new error("failed to submit");
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || "Failed to submit");
       }
+
+      toast.success("Blog submitted successfully!");
+
       setFormData({
         title: "",
         description: "",
-        category: "",
+        category: "technology",
         image: null,
       });
-      // toast.success("submit successfully!");
-      console.log(data);
-      
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error(error.message || "Failed to submit blog");
     } finally {
       setIsSubmitted(false);
     }
   };
 
   return (
-    <div className="min-h-[900px]  flex items-center justify-center px-4 mt-[50px]">
+    <div className="min-h-[900px] flex items-center justify-center px-4 mt-[50px]">
       <form
         className="w-full max-w-[900px] bg-white shadow-xl rounded-2xl p-10 space-y-6"
         onSubmit={handleSubmit}
@@ -63,20 +66,21 @@ const Page = () => {
         <h1 className="text-3xl font-bold text-gray-800 text-center">
           Upload Blog Details
         </h1>
-        <div className="flex gap-4">
-          {/* Title */}
-          <div className="flex-1">
-            <label className="block text-sm font-semibold text-gray-600 mb-2">
-              Title
-            </label>
-            <input
-              type="text"
-              placeholder="Enter blog title"
-              className="w-full rounded-lg border border-gray-300 p-3 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300"
-              name="title"
-              onChange={onChangeHandler}
-            />
-          </div>
+
+        {/* Title */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-600 mb-2">
+            Title
+          </label>
+          <input
+            type="text"
+            placeholder="Enter blog title"
+            className="w-full rounded-lg border border-gray-300 p-3 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300"
+            name="title"
+            value={formData.title}
+            onChange={onChangeHandler}
+            required
+          />
         </div>
 
         {/* Description */}
@@ -87,13 +91,15 @@ const Page = () => {
           <textarea
             placeholder="Write a short description..."
             name="description"
+            value={formData.description}
             onChange={onChangeHandler}
             className="w-full rounded-lg border border-gray-300 p-3 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300"
             rows={4}
+            required
           />
         </div>
 
-        {/* Flex Row: Author + Category */}
+        {/* Category + Image */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Category */}
           <div>
@@ -103,6 +109,7 @@ const Page = () => {
             <select
               className="w-full rounded-lg border border-gray-300 p-3 bg-gray-50 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300"
               name="category"
+              value={formData.category}
               onChange={onChangeHandler}
             >
               <option value="technology">Technology</option>
@@ -110,6 +117,8 @@ const Page = () => {
               <option value="agriculture">Agriculture</option>
             </select>
           </div>
+
+          {/* Image */}
           <div>
             <label
               htmlFor="upload"
@@ -123,6 +132,7 @@ const Page = () => {
               name="image"
               onChange={onChangeHandler}
               className="w-full cursor-pointer rounded-lg border border-gray-300 p-3 bg-gray-50 text-gray-700 hover:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-300"
+              accept="image/*"
             />
           </div>
         </div>
