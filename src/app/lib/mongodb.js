@@ -4,10 +4,12 @@ import mongoose from "mongoose";
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error("⚠️ Please define the MONGODB_URI environment variable inside Vercel");
+  throw new Error(
+    "⚠️ Please define the MONGODB_URI environment variable inside Vercel"
+  );
 }
 
-// Global cache to prevent multiple connections in serverless
+// Use global cache to prevent multiple connections in serverless
 let cached = global.mongoose;
 
 if (!cached) {
@@ -21,8 +23,10 @@ async function connectDB() {
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
-      bufferCommands: false, // disables mongoose buffering
-    }).then((mongoose) => mongoose);
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      bufferCommands: true, // ✅ allow queries to queue until connected
+    });
   }
 
   cached.conn = await cached.promise;
