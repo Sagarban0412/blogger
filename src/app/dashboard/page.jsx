@@ -4,10 +4,13 @@ import { redirect } from "next/navigation";
 import {AdminSidebar} from "../components/AdminSidebar.jsx";
 import Blogdata from "../components/Blogdata.jsx";
 import AdminBlogs from "../components/AdminBlogs.jsx";
+import connectDB from "../lib/mongodb.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 export default async function DashboardPage() {
+  await connectDB();
+
   // ✅ Await cookies()
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
