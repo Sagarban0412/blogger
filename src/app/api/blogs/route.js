@@ -97,7 +97,7 @@ export async function POST(request) {
       author: userId,
       image: imageUrl,
     };
-
+    
     await BlogModel.create(blogData);
     console.log("Blog saved in database");
 
