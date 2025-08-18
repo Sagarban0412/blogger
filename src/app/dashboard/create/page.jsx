@@ -45,7 +45,7 @@ const Page = () => {
         image: null,
       });
       // toast.success("submit successfully!");
-      console.log(formData);
+      console.log(data);
       
     } catch (error) {
       console.log(error);
