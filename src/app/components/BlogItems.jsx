@@ -6,7 +6,7 @@ import Link from "next/link";
 const BlogLists = ({ id, image, title, description, category, author }) => {
   return (
     <div className=" shadow-gray-600 hover:shadow-2xl rounded-lg cursor-pointer">
-        <div className="max-w-[534px] sm:max-w-[534px]  rounded-lg p-4">
+        <div className="min-w-[500px] max-w-[534px] sm:max-w-[534px]  rounded-lg p-4">
           <div className=" h-64 relative rounded overflow-hidden mb-4">
             <Image
               src={image || "/placeholder.jpg"}

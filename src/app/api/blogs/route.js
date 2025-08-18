@@ -56,26 +56,26 @@ export async function POST(request) {
     const formData = await request.formData();
     const timestamp = Date.now();
 
-    const image = formData.get("image");
-    if (!image || !image.name) {
-      return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
-    }
+    // const image = formData.get("image");
+    // if (!image || !image.name) {
+    //   return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
+    // }
 
-    const imageByteData = await image.arrayBuffer();
-    const buffer = Buffer.from(imageByteData);
+    // const imageByteData = await image.arrayBuffer();
+    // const buffer = Buffer.from(imageByteData);
 
-    // Ensure uploads folder exists
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadsDir, { recursive: true });
+    // // Ensure uploads folder exists
+    // const uploadsDir = path.join(process.cwd(), "public", "uploads");
+    // await mkdir(uploadsDir, { recursive: true });
 
-    // Save file
-    const fileName = `${timestamp}_${image.name}`;
-    const filePath = path.join(uploadsDir, fileName);
-    await writeFile(filePath, buffer);
+    // // Save file
+    // const fileName = `${timestamp}_${image.name}`;
+    // const filePath = path.join(uploadsDir, fileName);
+    // await writeFile(filePath, buffer);
 
-    // Create full image URL
-    const imageUrl = `${request.nextUrl.origin}/uploads/${fileName}`;
-    console.log("Image uploaded:", imageUrl);
+    // // Create full image URL
+    // const imageUrl = `${request.nextUrl.origin}/uploads/${fileName}`;
+    // console.log("Image uploaded:", imageUrl);
 
     //geting user id from cookies
 
@@ -97,7 +97,7 @@ export async function POST(request) {
       description: formData.get("description"),
       category: formData.get("category"),
       author: userId,
-      image: imageUrl,
+      image: "https://plus.unsplash.com/premium_photo-1706800283398-e2a5591c5fa0?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     };
 
     await BlogModel.create(blogData);
