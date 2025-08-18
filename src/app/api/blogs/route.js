@@ -7,9 +7,10 @@ import BlogModel from "@/app/models/blogModel";
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-connectDB();
+
 
 export async function GET(req) {
+  await connectDB();
   try {
     const url = new URL(req.url);
     const filter = url.searchParams.get("filter"); // "all" or "my"
@@ -50,6 +51,7 @@ export async function GET(req) {
 }
 
 export async function POST(request) {
+  await connectDB();
   try {
     const formData = await request.formData();
     const timestamp = Date.now();
@@ -97,7 +99,7 @@ export async function POST(request) {
       author: userId,
       image: imageUrl,
     };
-    
+
     await BlogModel.create(blogData);
     console.log("Blog saved in database");
 
