@@ -7,6 +7,7 @@ const nextConfig = {
       "picsum.photos",
       "localhost",
       "plus.unsplash.com",
+      "res.cloudinary.com"
     ],
   },
 };
