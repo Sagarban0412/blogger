@@ -45,11 +45,11 @@ export function AdminSidebar() {
   return (
     <div
       className={cn(
-        "flex  max-w-[400px] flex-1 flex-col overflow-hidden rounded-md border border-neutral-200 md:flex-row dark:border-neutral-700 dark:bg-neutral-800","min-h-screen"
+        "flex  max-w-[300px] flex-1 flex-col overflow-hidden rounded-md border-neutral-200 md:flex-row dark:border-neutral-700 dark:bg-neutral-800","min-h-screen"
       )}
     >
       <Sidebar open={open} setOpen={setOpen} animate={false}>
-        <SidebarBody className="justify-between gap-10 bg-white">
+        <SidebarBody className="justify-between gap-10 ">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
             <>
               <Logo />

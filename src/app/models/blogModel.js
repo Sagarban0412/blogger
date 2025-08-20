@@ -31,7 +31,6 @@ const blogSchema = new mongoose.Schema(
   { timestamps: true } // adds createdAt & updatedAt
 );
 
-const BlogModel =
-  mongoose.models.Blog || mongoose.model("Blog", blogSchema);
+const BlogModel = mongoose.models.Blog || mongoose.model("Blog", blogSchema);
 
 export default BlogModel;
