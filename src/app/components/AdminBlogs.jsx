@@ -54,7 +54,7 @@ const AdminBlogs = () => {
             <tr key={blog._id} className="hover:bg-gray-100">
               <td className="border px-4 py-2">{index + 1}</td>
               <td className="border px-4 py-2">{blog.title}</td>
-              <td className="border px-4 py-2">{blog.description}</td>
+              <td className="border px-4 py-2" dangerouslySetInnerHTML={{__html:blog.description.slice(0,100)}}></td>
               <td className="border px-4 py-2">{blog.category}</td>
               <td className="border px-4 py-2 space-x-2">
                 <button

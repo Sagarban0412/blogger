@@ -10,7 +10,6 @@ const BlogPage = () => {
   const [blogs, setBlogs] = useState([]);
   const params = useParams();
   const id = params.id;
-  
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -18,7 +17,6 @@ const BlogPage = () => {
         const res = await axios.get("/api/blogs"); // fetch all blogs
         setBlogs(res.data);
         // console.log(res.data);
-        
       } catch (err) {
         console.error("Error fetching blogs:", err);
       }
@@ -51,9 +49,10 @@ const BlogPage = () => {
         </div>
         <div className="mt-3 flex flex-col justify-center items-center">
           <p className="italic">{data.category}</p>
-          <p className="text-gray-700 text-2xl text-justify px-4 sm:px-10 md:px-40 mt-4">
-            {data.description}
-          </p>
+          <p
+            className="text-gray-700 text-2xl text-justify px-4 sm:px-10 md:px-40 mt-4 whitespace-pre-line"
+            dangerouslySetInnerHTML={{ __html:data.description}}
+          ></p>
         </div>
       </div>
     </>
